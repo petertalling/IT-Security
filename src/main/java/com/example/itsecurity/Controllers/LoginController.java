@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -31,21 +28,20 @@ public class LoginController{
         Properties prop = new Properties();
         prop.load(new FileInputStream("src/main/resources/application.properties"));
         Connection con = DriverManager.getConnection(
-                prop.getProperty("spring.datasource.url"),
+                prop.getProperty("connectionString"),
                 prop.getProperty("spring.datasource.username"),
                 prop.getProperty("spring.datasource.password"));
 
         Statement stmt = con.createStatement();
-        String sql = "SELECT * FROM users WHERE username = + 'peter' + and password = '1234'";
-        if(stmt.execute(sql)){
+        String sql = "SELECT * FROM users WHERE username = '" + username + "' and password = '" + password + "'";
+        ResultSet res = stmt.executeQuery(sql);
+        if(res.next()){
             model.addAttribute("message", "Login successful.");
             return "successful-login";
         }else{
             model.addAttribute("message", "Login failed.");
             return "unsuccessful-login";
         }
-
-        //"SELECT * FROM users WHERE user = '" + $user + "' and password = '" + $password + "'"
 
     }
 
