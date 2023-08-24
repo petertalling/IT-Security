@@ -7,15 +7,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
-import java.util.Optional;
 import java.util.Properties;
 
 @Controller
 @RequestMapping("/loginView")
-public class LoginController{
+public class LoginController {
+
     @RequestMapping("/login")
     public String addByForm() {
         return "login";
@@ -35,11 +34,13 @@ public class LoginController{
         Statement stmt = con.createStatement();
         String sql = "SELECT * FROM users WHERE username = '" + username + "' and password = '" + password + "'";
         ResultSet res = stmt.executeQuery(sql);
-        if(res.next()){
+        if (res.next()) {
             model.addAttribute("message", "Login successful.");
+            con.close();
             return "successful-login";
-        }else{
+        } else {
             model.addAttribute("message", "Login failed.");
+            con.close();
             return "unsuccessful-login";
         }
 
