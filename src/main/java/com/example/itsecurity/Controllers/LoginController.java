@@ -21,7 +21,7 @@ public class LoginController {
     }
 
 
-    /*DETTA ÄR DEN SÅRBARA KODEN
+    //DETTA ÄR DEN SÅRBARA KODEN
     @PostMapping("/verify")
     public String verifyUser(@RequestParam("username") String username, @RequestParam("password") String password, Model model) throws SQLException, IOException {
 
@@ -47,8 +47,8 @@ public class LoginController {
 
     }
 
-     */
 
+/*
     @PostMapping("/verify")
     public String verifyUser(@RequestParam("username") String username, @RequestParam("password") String password, Model model) throws SQLException, IOException {
 
@@ -74,5 +74,7 @@ public class LoginController {
         }
 
     }
+
+ */
 
 }
