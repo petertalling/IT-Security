@@ -1,4 +1,4 @@
 # IT-Security
-Group project for IT-security course at Nackademin and security updates(OWASP10)
+Group project by Peter, Robin, Mark and Lemonia for IT-security course at Nackademin and security updates(OWASP10)
 
 
