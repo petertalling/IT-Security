@@ -32,11 +32,6 @@ public class ItSecurityApplication {
 		BruteForcePasswordCracker bfpc = new BruteForcePasswordCracker();
 
 
-
-
-
-
-
 	}
 
 }

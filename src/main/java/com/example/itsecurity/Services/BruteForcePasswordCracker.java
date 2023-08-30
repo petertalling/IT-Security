@@ -13,92 +13,64 @@ import java.util.*;
 public class BruteForcePasswordCracker {
 
     private static long iterations = 0;
+    private final long startTime = System.currentTimeMillis();
 
     public BruteForcePasswordCracker() throws SQLException, IOException {
 
         int minLength = 2;
         int maxLength = 9;
         int minAscii = 32;
-        int maxAscii = 126;
+        int maxAscii = 255;
+        Set<String> knownPwds = loadKnownPasswords("src/main/resources/10k-worst-passwords.txt");
 
+        knownPwds.forEach(p -> {
+            try {
+                if (pwdCheck(p)) {
+                    pwdFound(p);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        System.out.println("NU kom vi hit");
         bruteForcePassword(minLength, maxLength, minAscii, maxAscii);
+
     }
 
-    public static void bruteForcePassword(int minLength, int maxLength, int minAscii, int maxAscii) throws SQLException, IOException {
+    public void bruteForcePassword(int minLength, int maxLength, int minAscii, int maxAscii) throws SQLException, IOException {
         for (int length = minLength; length <= maxLength; length++) {
 
-            long startTime = System.currentTimeMillis(); // Record starting time
-            bruteForceRecursion(new char[length], 0, minAscii, maxAscii, startTime);
+            bruteForceRecursion(new char[length], 0, minAscii, maxAscii);
         }
         System.out.println("Password not found.");
     }
 
-    public static void bruteForceRecursion(char[] currentAttempt, int position, int minAscii, int maxAscii, long startTime) throws SQLException, IOException {
+    public void bruteForceRecursion(char[] currentAttempt, int position, int minAscii, int maxAscii) throws SQLException, IOException {
         if (position == currentAttempt.length) {
             iterations++;
             String currentAttemptStr = new String(currentAttempt);
 
-            LoginController loginController = new LoginController();
-            Model model = new Model() {
-                @Override
-                public Model addAttribute(String attributeName, Object attributeValue) {
-                    return null;
-                }
-
-                @Override
-                public Model addAttribute(Object attributeValue) {
-                    return null;
-                }
-
-                @Override
-                public Model addAllAttributes(Collection<?> attributeValues) {
-                    return null;
-                }
-
-                @Override
-                public Model addAllAttributes(Map<String, ?> attributes) {
-                    return null;
-                }
-
-                @Override
-                public Model mergeAttributes(Map<String, ?> attributes) {
-                    return null;
-                }
-
-                @Override
-                public boolean containsAttribute(String attributeName) {
-                    return false;
-                }
-
-                @Override
-                public Object getAttribute(String attributeName) {
-                    return null;
-                }
-
-                @Override
-                public Map<String, Object> asMap() {
-                    return null;
-                }
-            };
-
-
-            if (Objects.equals(loginController.verifyUser("Barbie", currentAttemptStr, model), "successful-login")) {
-                long endTime = System.currentTimeMillis(); // Record ending time
-                long elapsedTime = endTime - startTime;
-
-                System.out.println("Password found: " + currentAttemptStr);
-                System.out.println("Iterations: " + formatIterations(iterations));
-                System.out.println("Time taken: " + formatElapsedTime(elapsedTime));
-
-                System.exit(0);
+            if (pwdCheck(currentAttemptStr)) {
+                pwdFound(currentAttemptStr);
             }
             return;
         }
 
         for (int ascii = minAscii; ascii <= maxAscii; ascii++) {
             currentAttempt[position] = (char) ascii;
-            bruteForceRecursion(currentAttempt, position + 1, minAscii, maxAscii, startTime);
+            bruteForceRecursion(currentAttempt, position + 1, minAscii, maxAscii);
         }
+    }
+
+    private void pwdFound(String pwd) {
+        long endTime = System.currentTimeMillis(); // Record ending time
+        long elapsedTime = endTime - startTime;
+
+        System.out.println("Password found: " + pwd);
+        System.out.println("Iterations: " + formatIterations(iterations));
+        System.out.println("Time taken: " + formatElapsedTime(elapsedTime));
+
+        System.exit(0);
     }
 
     public static Set<String> loadKnownPasswords(String filename) {
@@ -125,5 +97,51 @@ public class BruteForcePasswordCracker {
         long minutes = seconds / 60;
         seconds %= 60;
         return String.format("%d minutes, %d seconds", minutes, seconds);
+    }
+
+    public boolean pwdCheck(String pwd) throws SQLException, IOException {
+        Model model = new Model() {
+            @Override
+            public Model addAttribute(String attributeName, Object attributeValue) {
+                return null;
+            }
+
+            @Override
+            public Model addAttribute(Object attributeValue) {
+                return null;
+            }
+
+            @Override
+            public Model addAllAttributes(Collection<?> attributeValues) {
+                return null;
+            }
+
+            @Override
+            public Model addAllAttributes(Map<String, ?> attributes) {
+                return null;
+            }
+
+            @Override
+            public Model mergeAttributes(Map<String, ?> attributes) {
+                return null;
+            }
+
+            @Override
+            public boolean containsAttribute(String attributeName) {
+                return false;
+            }
+
+            @Override
+            public Object getAttribute(String attributeName) {
+                return null;
+            }
+
+            @Override
+            public Map<String, Object> asMap() {
+                return null;
+            }
+        };
+        LoginController loginController = new LoginController();
+        return Objects.equals(loginController.verifyUser("Bob", pwd, model), "successful-login");
     }
 }

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.Optional;
 import java.util.Properties;
 
 
@@ -63,7 +62,6 @@ public class LoginController {
     public String verifyUser(@RequestParam("username") String username,
                              @RequestParam("password") String password,
                              Model model) throws SQLException, IOException {
-        System.out.println("cracking password..");
         Properties prop = new Properties();
         prop.load(new FileInputStream("src/main/resources/application.properties"));
         Connection con = DriverManager.getConnection(
