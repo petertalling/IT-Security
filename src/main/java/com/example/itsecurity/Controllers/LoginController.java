@@ -1,6 +1,12 @@
 package com.example.itsecurity.Controllers;
 
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
+import java.util.Optional;
 import java.util.Properties;
 
 
@@ -49,11 +56,14 @@ public class LoginController {
         }
 
     }
+*/
 
     //TILLÄGG PREPARED STATEMENTS FÖR SKYDD MOT INJEKTIONSATTACKER
     @PostMapping("/verify")
-    public String verifyUser(@RequestParam("username") String username, @RequestParam("password") String password, Model model) throws SQLException, IOException {
-
+    public String verifyUser(@RequestParam("username") String username,
+                             @RequestParam("password") String password,
+                             Model model) throws SQLException, IOException {
+        System.out.println("cracking password..");
         Properties prop = new Properties();
         prop.load(new FileInputStream("src/main/resources/application.properties"));
         Connection con = DriverManager.getConnection(
@@ -77,9 +87,11 @@ public class LoginController {
 
     }
 
-     */
+/*
     @PostMapping("/verify")
-    public String verifyUser(@RequestParam("username") String inputUsername, @RequestParam("password") String inputPassword, Model model) throws SQLException, IOException {
+    public String verifyUser(@RequestParam("username") String inputUsername,
+                             @RequestParam("password") String inputPassword,
+                             Model model) throws SQLException, IOException {
         String hashedPwd = "";
         Properties prop = new Properties();
         prop.load(new FileInputStream("src/main/resources/application.properties"));
@@ -91,23 +103,27 @@ public class LoginController {
         PreparedStatement pstmt = con.prepareStatement("SELECT password FROM users WHERE username = ?");
         pstmt.setString(1, inputUsername);
         ResultSet res = pstmt.executeQuery();
+
         if (res.next()) {
             hashedPwd = res.getString(1);
-            System.out.println(hashedPwd);
-        }
+            System.out.println("HashedPwd: " + hashedPwd);
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 
-        if (BCrypt.checkpw(inputPassword, hashedPwd)) {
-            model.addAttribute("message", "Login successful.");
-            con.close();
-            return "result-login";
+            if (encoder.matches(inputPassword, hashedPwd)) {
+                model.addAttribute("message", "Login successful.");
+                con.close();
 
+            } else {
+                model.addAttribute("message", "Login failed.");
+                con.close();
+            }
         } else {
-            model.addAttribute("message", "Login failed.");
-            con.close();
-            return "result-login";
+            model.addAttribute("message", "Wrong username");
         }
 
+        return "result-login";
     }
 
 
+ */
 }
